@@ -3,6 +3,7 @@ import "dotenv/config";
 import connectDB from './Config/db.js';
 import middleware from './servermiddleware.js'
 import authRouter from './Routes/authRouter.js'
+import userRouter from './Routes/userRouter.js';
 
 
 
@@ -17,6 +18,8 @@ app.use(middleware)
 
 // Routes
 app.use(authRouter)
+app.use(userRouter)
+
 
 
 
