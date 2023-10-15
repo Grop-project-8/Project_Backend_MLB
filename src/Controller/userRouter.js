@@ -1,8 +1,8 @@
 import User from "../Models/usermodel.js";
+import OTP from "../Models/OTP.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import nodemailer from 'nodemailer';
-
+import nodemailer from "nodemailer";
 
 export const getUser = async (req, res) => {
   try {
@@ -18,31 +18,6 @@ export const getUser = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).send("Server error");
-  }
-};
-
-export const sendConfirmationEmail = async (email) => {
-  try {
-    let transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'projectmlb8@gmail.com', 
-        pass: 'eysw octl apos tyzb', 
-      },
-    });
-
-    
-    let info = await transporter.sendMail({
-      from: 'projectmlb8@gmail.com', 
-      to: email, 
-      subject: 'Email Confirmation', 
-      text: 'Please confirm your email.', 
-      html: '<b>Please confirm your email.</b>', 
-    });
-
-    console.log('Message sent: %s', info.messageId);
-  } catch (error) {
-    console.error('An error occurred while sending the email:', error);
   }
 };
 
@@ -97,11 +72,125 @@ export const updateProfile = async (req, res) => {
     const heightInMeters = height / 100;
     user.bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
     await user.save();
-    return res.send('User profile updated successfully');
-
+    return res.send("User profile updated successfully");
   } catch (error) {
     console.error(error);
-    return res.status(500).send('Error updating user profile');
+    return res.status(500).send("Error updating user profile");
   }
 };
 
+export const sendOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const lowercaseEmail = email.toLowerCase(); 
+
+    // ตรวจสอบว่ามีผู้ใช้ในระบบหรือไม่
+    const user = await User.findOne({ email: { $regex: new RegExp('^' + lowercaseEmail + '$', 'i') } });
+    if (!user) {
+      return res.status(400).send("User not found");
+    }
+    
+    const generatedOTP = generateOTP();
+    const newOTP = new OTP({
+      userId: user._id,
+      otp: generatedOTP,
+    });
+    await newOTP.save();
+    // ส่ง OTP ไปยังอีเมลของผู้ใช้
+    await sendotptomail(lowercaseEmail, generatedOTP);
+    res.send({ message: "OTP sent to your email" });
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send("Error sending OTP");
+  }
+};
+
+export const rePass = async (req, res) => {
+  try {
+    const { newPassword, otp } = req.body;
+    console.log(newPassword)
+    const foundOTP = await OTP.findOne({ otp });
+    if (!foundOTP) {
+      return res.status(400).send("Invalid OTP");
+    }
+
+    const user = await User.findOne({ _id: foundOTP.userId });
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    await user.save();
+        // ลบ OTP จากฐานข้อมูล
+    await OTP.findOneAndDelete({ _id: foundOTP._id });
+    res.status(200).send("Password Changed Success");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating password");
+  }
+};
+
+
+
+
+// ฟังก์ชั่นแยก
+const generateOTP = () => {
+  const digits = "0123456789";
+  let OTP = "";
+  for (let i = 0; i < 6; i++) {
+    OTP += digits[Math.floor(Math.random() * 10)];
+  }
+  return OTP;
+};
+
+
+const sendConfirmationEmail = async (email) => {
+  try {
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "projectmlb8@gmail.com",
+        pass: "eysw octl apos tyzb",
+      },
+    });
+
+    let info = await transporter.sendMail({
+      from: "projectmlb8@gmail.com",
+      to: email,
+      subject: "Email Confirmation",
+      text: "Please confirm your email.",
+      html: "<b>Please confirm your email.</b>",
+    });
+
+    console.log("Message sent: %s", info.messageId);
+  } catch (error) {
+    console.error("An error occurred while sending the email:", error);
+  }
+};
+
+
+const sendotptomail = async (email, generatedOTP) => {
+  try {
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "projectmlb8@gmail.com",
+        pass: "eysw octl apos tyzb",
+      },
+    });
+
+    let info = await transporter.sendMail({
+      from: "projectmlb8@gmail.com",
+      to: email,
+      subject: "Email Confirmation",
+      text: `Your OTP is ${generatedOTP}`,
+      html: `<b>Your OTP is ${generatedOTP}</b>`,
+    });
+    console.log("Message sent: %s", info.messageId);
+  } catch (error) {
+    console.error("An error occurred while sending the email:", error);
+  }
+};

@@ -7,14 +7,19 @@ export const register = async (req, res) => {
     // req user
     const { username, password, email, weight, height } = req.body;
 
+    const lowercaseEmail = email.toLowerCase();
     //cal bmi
     const heightInMeters = height / 100;
     const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).send("Invalid Email Format");
+    }
     // check user
-    var user = await User.findOne({ username });
+    var user = await User.findOne({ $or: [{ username }, { email: { $regex: new RegExp(`^${lowercaseEmail}$`, "i") } }] });
     if (user) {
-      return res.status(400).send("User Already exists");
+      return res.status(400).send("Username or Email already exists");
     }
     //gen salt
     const salt = await bcrypt.genSalt(10);
@@ -28,7 +33,6 @@ export const register = async (req, res) => {
     });
     // Encrypt การเข้ารหัส
     user.password = await bcrypt.hash(password, salt);
-
     await user.save();
     return res.send("Register Success");
   } catch (err) {

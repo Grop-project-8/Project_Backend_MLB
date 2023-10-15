@@ -6,17 +6,9 @@ const UserSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-    unique: true
   },
   password: {
     type: String,
-    validate:[
-      function(password){
-        return password && password.length>= 6;
-      },
-      'Password must be at least 6 characters'
-    ]
   },
   weight: {
     type: Number,
@@ -34,6 +26,10 @@ const UserSchema = new mongoose.Schema({
   enabled: {
     type: Boolean,
     default: true,
+  },
+  otp: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'OTP'  
   },
   loginTimes: [
     {

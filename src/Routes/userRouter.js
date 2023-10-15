@@ -1,7 +1,7 @@
 import express from "express";
 
 
-import { getUser , updatePassword , updateProfile  } from "../Controller/userRouter.js";
+import { getUser , updatePassword , updateProfile,sendOTP ,rePass } from "../Controller/userRouter.js";
 
 import { auth } from '../middleware/auth.js'
 
@@ -25,6 +25,18 @@ userRouter.put("/updatePassword", auth, updatePassword);
 // Method PUT
 // Access Private
 userRouter.put("/updateProfile", auth, updateProfile);
+
+// Endpoint http://localhost:8000/sendOTP
+// Method POST
+// Access Publish
+userRouter.post("/sendOTP",sendOTP);
+
+// Endpoint http://localhost:8000/rePass
+// Method POST
+// Access private
+userRouter.post("/rePass",rePass);
+
+
 
 
 export default userRouter
