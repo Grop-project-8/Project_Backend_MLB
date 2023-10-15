@@ -3,21 +3,37 @@ import OTP from "../Models/OTP.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import { v2 as cloudinary } from "cloudinary";
+import { v4 as uuidv4 } from "uuid";
 
-export const getUser = async (req, res) => {
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+export const createImage = async (req, res) => {
   try {
-    const user = await User.findOne(
-      { username: req.user.username },
-      { password: 0, email: 0, _id: 0 }
-    ).exec();
-    if (user) {
-      res.status(200).json(user);
-    } else {
-      res.status(403).send("Access denied");
-    }
+
+    const token = req.cookies.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const username = decodedToken.user.username;
+
+    const result = await cloudinary.uploader.upload(req.body.image, {
+      public_id: username,
+      resource_type: "auto",
+    });
+
+    await User.findOneAndUpdate(
+      { username: username }, 
+      { profileImage: result.secure_url }, 
+      { new: true }
+    );
+
+    res.send(result)
   } catch (err) {
     console.log(err);
-    res.status(500).send("Server error");
+    res.status(500).send("Upload Error!!!");
   }
 };
 
@@ -57,6 +73,37 @@ export const updatePassword = async (req, res) => {
   }
 };
 
+export const removeImage = async (req, res) => {
+  try {
+    let image_id = req.body.public_id
+    cloudinary.uploader.destroy(image_id,(result)=>{
+      res.send(result);
+    })
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Remove Error!!!");
+  }
+};
+
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findOne(
+      { username: req.user.username },
+      { password: 0, email: 0, _id: 0 }
+    ).exec();
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(403).send("Access denied");
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Server error");
+  }
+};
+
+
+
 export const updateProfile = async (req, res) => {
   try {
     const { weight, height } = req.body;
@@ -82,14 +129,16 @@ export const updateProfile = async (req, res) => {
 export const sendOTP = async (req, res) => {
   try {
     const { email } = req.body;
-    const lowercaseEmail = email.toLowerCase(); 
+    const lowercaseEmail = email.toLowerCase();
 
     // ตรวจสอบว่ามีผู้ใช้ในระบบหรือไม่
-    const user = await User.findOne({ email: { $regex: new RegExp('^' + lowercaseEmail + '$', 'i') } });
+    const user = await User.findOne({
+      email: { $regex: new RegExp("^" + lowercaseEmail + "$", "i") },
+    });
     if (!user) {
       return res.status(400).send("User not found");
     }
-    
+
     const generatedOTP = generateOTP();
     const newOTP = new OTP({
       userId: user._id,
@@ -99,7 +148,6 @@ export const sendOTP = async (req, res) => {
     // ส่ง OTP ไปยังอีเมลของผู้ใช้
     await sendotptomail(lowercaseEmail, generatedOTP);
     res.send({ message: "OTP sent to your email" });
-    
   } catch (error) {
     console.error(error);
     return res.status(500).send("Error sending OTP");
@@ -109,7 +157,7 @@ export const sendOTP = async (req, res) => {
 export const rePass = async (req, res) => {
   try {
     const { newPassword, otp } = req.body;
-    console.log(newPassword)
+    console.log(newPassword);
     const foundOTP = await OTP.findOne({ otp });
     if (!foundOTP) {
       return res.status(400).send("Invalid OTP");
@@ -124,7 +172,7 @@ export const rePass = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, salt);
     user.password = hashedPassword;
     await user.save();
-        // ลบ OTP จากฐานข้อมูล
+    // ลบ OTP จากฐานข้อมูล
     await OTP.findOneAndDelete({ _id: foundOTP._id });
     res.status(200).send("Password Changed Success");
   } catch (error) {
@@ -133,10 +181,8 @@ export const rePass = async (req, res) => {
   }
 };
 
-
-
-
 // ฟังก์ชั่นแยก
+
 const generateOTP = () => {
   const digits = "0123456789";
   let OTP = "";
@@ -145,7 +191,6 @@ const generateOTP = () => {
   }
   return OTP;
 };
-
 
 const sendConfirmationEmail = async (email) => {
   try {
@@ -170,7 +215,6 @@ const sendConfirmationEmail = async (email) => {
     console.error("An error occurred while sending the email:", error);
   }
 };
-
 
 const sendotptomail = async (email, generatedOTP) => {
   try {

@@ -27,6 +27,9 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  profileImage: {
+    type: String, 
+  },
   otp: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'OTP'  

@@ -1,7 +1,7 @@
 import express from "express";
 
 
-import { getUser , updatePassword , updateProfile,sendOTP ,rePass } from "../Controller/userRouter.js";
+import  {  getUser , updatePassword , updateProfile,sendOTP ,rePass,createImage} from "../Controller/userRouter.js";
 
 import { auth } from '../middleware/auth.js'
 
@@ -35,6 +35,13 @@ userRouter.post("/sendOTP",sendOTP);
 // Method POST
 // Access private
 userRouter.post("/rePass",rePass);
+
+// Endpoint http://localhost:8000/createImage
+// Method POST
+// Access private
+userRouter.post("/createImage",auth,createImage);
+
+
 
 
 

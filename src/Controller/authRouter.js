@@ -118,13 +118,13 @@ export const checkId = async (req, res) => {
     if (!token) {
       return res
         .status(200)
-        .json({ message: "Not logged in", isLoggedIn: false });
+        .send({ message: "Not logged in", isLoggedIn: false });
     } else {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       console.log("middleware", decoded);
       req.user = decoded.user;
       // res.cookie('token', token, { httpOnly: true });
-      return res.status(200).json({ message: "Logged in", isLoggedIn: true });
+      return res.status(200).send({ message: "Logged in", isLoggedIn: true });
     }
   } catch (err) {
     console.log(err);

@@ -16,8 +16,8 @@ const middleware = express();
 
 middleware.use(cors(corsOptions))
 middleware.use(helmet());
-middleware.use(express.json());
-middleware.use(express.urlencoded({ extended: true }));
+middleware.use(express.json({ limit: '50mb' })); 
+middleware.use(express.urlencoded({ limit: '50mb', extended: true }));
 middleware.use(morgan("dev")); 
 middleware.use(cookieParser());
 
