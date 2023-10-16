@@ -5,8 +5,8 @@ import jwt from "jsonwebtoken";
 // เช็ค JWT
 export const auth = (req, res, next) => {
   try {
-
-    const token = req.cookies.token
+    console.log(req);
+    const token = req.cookies.token  /* ปกติใช้ req.headers */
     console.log(token)
 
     if (!token) {

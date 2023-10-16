@@ -77,14 +77,15 @@ export const login = async (req, res) => {
 
           await user.save();
 
+          /* Token เก็บ Cookies */
           res.cookie("token", token, {
-            maxAge: 30000,
-            httpOnly: true,
+            maxAge: 30000,  /* อายุ cookies */
+            httpOnly: true, /* ใช้ได้เฉพาะ คำสั่ง HTTP METHOD : GET PUT POST DELETE */
             secure: true,
-            sameSite: "none",
+            sameSite: "none",  /* ยิงเข้าหลังบ้าน */
           });
 
-          res.status(200).json({ message: "Login successful", payload });
+          res.status(200).json({ message: "Login successful", payload , token });
         }
       );
     } else {
@@ -128,11 +129,12 @@ export const checkId = async (req, res) => {
 
 export const currentUser = async (req, res) => {
   try {
+    /* req จาก Database */
     const user = await User.findOne({ username: req.user.username })
-      .select("-password -email -weight -height -bmi -lastVideoWatched")
+      .select("-password -email -weight -height -bmi -lastVideoWatched")   /*  - คือ ไม่ส่ง password email ออกไปหน้าบ้าน */
       .exec();
     if (user) {
-      res.status(200).json({ role: user.role });
+      res.status(200).json(user);
     } else {
       res.status(403).send("Access denied"); 
     }
