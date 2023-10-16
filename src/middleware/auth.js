@@ -5,7 +5,6 @@ import jwt from "jsonwebtoken";
 // เช็ค JWT
 export const auth = (req, res, next) => {
   try {
-
     const token = req.cookies.token
     console.log(token)
 
@@ -22,6 +21,7 @@ export const auth = (req, res, next) => {
     res.status(401).send("Error");
   }
 };
+
 
 // export const adminCheck = async(req, res, next) => {
 //   try {

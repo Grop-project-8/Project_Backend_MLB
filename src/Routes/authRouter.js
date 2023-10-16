@@ -28,10 +28,11 @@ authRouter.post("/checkid",checkId);
 // Access Pulish
 authRouter.post("/logout",logOut);
 
-// Endpoint http://localhost:8000/currentuesr
-// Method POST
+// Endpoint http://localhost:8000/currentUser
+// Method GET
 // Access Private
 authRouter.get("/currentUser", auth, currentUser);
 
 
 export default authRouter
+// 

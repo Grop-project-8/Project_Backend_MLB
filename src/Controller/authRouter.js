@@ -2,33 +2,39 @@ import User from "../Models/usermodel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-
 export const register = async (req, res) => {
   try {
-    // check user
-    const { username, password,email,weight,height } = req.body;
+    // req user
+    const { username, password, email, weight, height } = req.body;
 
-    var user = await User.findOne({ username });
-    if (user) {
-      return res.status(400).send("User Already exists");
+    const lowercaseEmail = email.toLowerCase();
+    //cal bmi
+    const heightInMeters = height / 100;
+    const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(2);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).send("Invalid Email Format");
     }
-
+    // check user
+    var user = await User.findOne({ $or: [{ username }, { email: { $regex: new RegExp(`^${lowercaseEmail}$`, "i") } }] });
+    if (user) {
+      return res.status(400).send("Username or Email already exists");
+    }
     //gen salt
     const salt = await bcrypt.genSalt(10);
-
     user = new User({
       username,
       password,
       email,
       weight,
       height,
+      bmi,
     });
     // Encrypt การเข้ารหัส
     user.password = await bcrypt.hash(password, salt);
-
     await user.save();
     return res.send("Register Success");
-    
   } catch (err) {
     console.log(err);
     alert("Error");
@@ -59,7 +65,7 @@ export const login = async (req, res) => {
       jwt.sign(
         payload,
         process.env.JWT_SECRET,
-        { expiresIn: "30s" },
+        { expiresIn: "1h" },
         async (err, token) => {
           if (err) throw err;
 
@@ -78,13 +84,13 @@ export const login = async (req, res) => {
           await user.save();
 
           res.cookie("token", token, {
-            maxAge: 30000,
+            maxAge: 3600000,
             httpOnly: true,
             secure: true,
             sameSite: "none",
           });
 
-          res.status(200).json({ message: "Login successful", payload });
+          res.status(200).json({ message: "Login successful", payload ,token});
         }
       );
     } else {
@@ -112,13 +118,13 @@ export const checkId = async (req, res) => {
     if (!token) {
       return res
         .status(200)
-        .json({ message: "Not logged in", isLoggedIn: false });
+        .send({ message: "Not logged in", isLoggedIn: false });
     } else {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       console.log("middleware", decoded);
       req.user = decoded.user;
       // res.cookie('token', token, { httpOnly: true });
-      return res.status(200).json({ message: "Logged in", isLoggedIn: true });
+      return res.status(200).send({ message: "Logged in", isLoggedIn: true });
     }
   } catch (err) {
     console.log(err);
@@ -129,15 +135,18 @@ export const checkId = async (req, res) => {
 export const currentUser = async (req, res) => {
   try {
     const user = await User.findOne({ username: req.user.username })
-      .select("-password -email -weight -height -bmi -lastVideoWatched")
+      .select("-password -email -_id")
       .exec();
     if (user) {
-      res.status(200).json({ role: user.role });
+      res.status(200).json(user);
     } else {
-      res.status(403).send("Access denied"); 
+      res.status(403).send("Access denied");
     }
   } catch (err) {
     console.log(err);
     res.status(500).send("Server error");
   }
 };
+
+
+
