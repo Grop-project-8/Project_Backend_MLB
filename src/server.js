@@ -6,9 +6,8 @@ import authRouter from "./Routes/authRouter.js";
 import userRouter from "./Routes/userRouter.js";
 
 // เชื่อมต่อ Mongodb
+
 connectDB();
-
-
 
 const app = express();
 
