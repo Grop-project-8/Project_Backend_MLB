@@ -5,16 +5,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
   },
   email: {
-    type: String,unique:true
+    type: String,
   },
   password: {
     type: String,
-    validate:[
-      function(password){
-        return password && password.length>= 6;
-      },
-      'Password must be at least 6 characters'
-    ]
   },
   weight: {
     type: Number,
@@ -33,6 +27,23 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  profileImage: {
+    type: String, 
+  },
+  otp: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'OTP'  
+  },
+  activity: [
+    {
+      activity:{
+        type:String
+      },
+      detail:{
+        type:String
+      }
+    }
+  ],
   loginTimes: [
     {
       type: Date,
@@ -41,11 +52,10 @@ const UserSchema = new mongoose.Schema({
   ],
   lastVideoWatched: {
     type:String, 
-  }
+  },
+  
 }, { timestamps: true });
 
 const User = mongoose.model('users', UserSchema);
 
 export default User;
-
-
