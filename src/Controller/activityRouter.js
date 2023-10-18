@@ -7,7 +7,7 @@ import User from "../Models/usermodel.js";
 // Create Post
 export const createPost = async (req, res) => {
   try {
-    const { activity, detail,duration } = req.body;
+    const { activitytype , activityname , detail , duration , createdAt } = req.body;
     const token = req.cookies.token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;
@@ -17,7 +17,7 @@ export const createPost = async (req, res) => {
       return res.status(404).send("User not found");
     }
 
-    existingUser.activity.push({ activity, detail,duration});
+    existingUser.activity.push({ activitytype,activityname, detail,duration,createdAt });
     const updatedUser = await existingUser.save();
 
     res.send(updatedUser);
@@ -49,7 +49,7 @@ export const createPost = async (req, res) => {
 // Edit Post
 export const editPost = async (req, res) => {
   try {
-    const { id, updatedActivity, updatedDetail } = req.body;
+    const { id, updatedActivityType, updatedActivityName, updatedDetail, updatedDuration  } = req.body;
     const token = req.cookies.token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;
@@ -68,8 +68,12 @@ export const editPost = async (req, res) => {
     }
 
     // อัปเดตข้อมูลกิจกรรม
-    existingUser.activity[activityIndex].activity = updatedActivity;
+    existingUser.activity[activityIndex].activitytype = updatedActivityType;
+    existingUser.activity[activityIndex].activityname = updatedActivityName;
     existingUser.activity[activityIndex].detail = updatedDetail;
+    existingUser.activity[activityIndex].duration = updatedDuration;
+    existingUser.activity[activityIndex].createdAt = Date.now();
+
 
     await existingUser.save();
 
