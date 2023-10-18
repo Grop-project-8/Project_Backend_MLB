@@ -36,11 +36,21 @@ const UserSchema = new mongoose.Schema({
   },
   activity: [
     {
-      activity:{
+      activitytype:{
+        type:String
+      },
+      activityname:{
         type:String
       },
       detail:{
         type:String
+      },
+      duration:{
+        type:Number
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
       }
     }
   ],
