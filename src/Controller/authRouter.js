@@ -31,6 +31,7 @@ export const register = async (req, res) => {
       height,
       bmi,
     });
+
     // Encrypt การเข้ารหัส
     user.password = await bcrypt.hash(password, salt);
     await user.save();
@@ -62,9 +63,7 @@ export const login = async (req, res) => {
         loginTime: new Date(),
       };
       //Generate Token
-      jwt.sign(
-        payload,
-        process.env.JWT_SECRET,
+      jwt.sign(payload,process.env.JWT_SECRET,
         { expiresIn: "1h" },
         async (err, token) => {
           if (err) throw err;
@@ -72,6 +71,7 @@ export const login = async (req, res) => {
           const lastIndex = user.loginTimes.length - 1;
 
           const latestLogin = user.loginTimes[lastIndex];
+
           if (
             latestLogin &&
             latestLogin.toDateString() === payload.loginTime.toDateString()
@@ -91,7 +91,7 @@ export const login = async (req, res) => {
             sameSite: "none",  /* ยิงเข้าหลังบ้าน */
           });
 
-          res.status(200).json({ message: "Login successful", payload ,token});
+          res.status(200).json({ message: "Login successful", payload });
         }
       );
     } else {
@@ -149,6 +149,3 @@ export const currentUser = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-
-
-

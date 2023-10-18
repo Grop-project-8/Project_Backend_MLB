@@ -2,15 +2,7 @@
 import jwt from 'jsonwebtoken';
 import User from "../Models/usermodel.js";
 
-export const feedData = async (req,res) => {
-    try {
-        const post = await Activity.find({}).exec();
-        res.send(post)
-    } catch (error) {
-        
-        res.status(500).send('Server error: ' + error.message)
-    }
-}
+
 
 // Create Post
 export const createPost = async (req, res) => {

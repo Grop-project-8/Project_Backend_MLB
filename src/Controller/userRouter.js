@@ -4,7 +4,6 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import { v2 as cloudinary } from "cloudinary";
-import { v4 as uuidv4 } from "uuid";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -14,7 +13,6 @@ cloudinary.config({
 
 export const createImage = async (req, res) => {
   try {
-
     const token = req.cookies.token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;
@@ -29,7 +27,6 @@ export const createImage = async (req, res) => {
       { profileImage: result.secure_url }, 
       { new: true }
     );
-
     res.send(result)
   } catch (err) {
     console.log(err);
@@ -102,8 +99,6 @@ export const getUser = async (req, res) => {
   }
 };
 
-
-
 export const updateProfile = async (req, res) => {
   try {
     const { weight, height } = req.body;
@@ -130,7 +125,6 @@ export const sendOTP = async (req, res) => {
   try {
     const { email } = req.body;
     const lowercaseEmail = email.toLowerCase();
-
     // ตรวจสอบว่ามีผู้ใช้ในระบบหรือไม่
     const user = await User.findOne({
       email: { $regex: new RegExp("^" + lowercaseEmail + "$", "i") },
@@ -181,8 +175,8 @@ export const rePass = async (req, res) => {
   }
 };
 
-// ฟังก์ชั่นแยก
 
+// ฟังก์ชั่นแยก
 const generateOTP = () => {
   const digits = "0123456789";
   let OTP = "";
