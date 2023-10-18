@@ -31,7 +31,7 @@ authRouter.post("/logout",logOut);
 // Endpoint http://localhost:8000/currentUser
 // Method GET
 // Access Private
-authRouter.get("/currentUser", auth, currentUser);
+authRouter.get("/currentUser", auth , currentUser);
 
 
 export default authRouter

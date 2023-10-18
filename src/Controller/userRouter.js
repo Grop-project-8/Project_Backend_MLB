@@ -99,7 +99,6 @@ export const getUser = async (req, res) => {
   }
 };
 
-
 export const updateProfile = async (req, res) => {
   try {
     const { weight, height } = req.body;

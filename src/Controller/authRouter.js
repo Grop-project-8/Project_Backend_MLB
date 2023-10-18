@@ -83,11 +83,12 @@ export const login = async (req, res) => {
 
           await user.save();
 
+          /* Token เก็บ Cookies */
           res.cookie("token", token, {
             maxAge: 3600000,
             httpOnly: true,
             secure: true,
-            sameSite: "none",
+            sameSite: "none",  /* ยิงเข้าหลังบ้าน */
           });
 
           res.status(200).json({ message: "Login successful", payload });
@@ -134,6 +135,7 @@ export const checkId = async (req, res) => {
 
 export const currentUser = async (req, res) => {
   try {
+    /* req จาก Database */
     const user = await User.findOne({ username: req.user.username })
       .select("-password -email -_id")
       .exec();

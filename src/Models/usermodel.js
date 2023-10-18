@@ -34,6 +34,23 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'OTP'  
   },
+  activity: [
+    {
+      activity:{
+        type:String
+      },
+      detail:{
+        type:String
+      },
+      duration:{
+        type:Number
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now
+      },
+    }
+  ],
   loginTimes: [
     {
       type: Date,
@@ -42,11 +59,10 @@ const UserSchema = new mongoose.Schema({
   ],
   lastVideoWatched: {
     type:String, 
-  }
+  },
+  
 }, { timestamps: true });
 
 const User = mongoose.model('users', UserSchema);
 
 export default User;
-
-

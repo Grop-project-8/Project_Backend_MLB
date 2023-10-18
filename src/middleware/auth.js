@@ -21,7 +21,7 @@ export const auth = (req, res, next) => {
     res.status(401).send("Error");
   }
 };
-
+0
 
 // export const adminCheck = async(req, res, next) => {
 //   try {
