@@ -5,10 +5,9 @@ import middleware from "./servermiddleware.js";
 import authRouter from "./Routes/authRouter.js";
 import userRouter from "./Routes/userRouter.js";
 import activityRouter from "./Routes/activityRouter.js";
-import yogaRouter from "./Routes/yogaRouter.js";
+import workoutRouter from "./Routes/workoutRouter.js";
 
 // เชื่อมต่อ Mongodb
-
 connectDB();
 
 const app = express();
@@ -21,7 +20,7 @@ app.use(express.json());
 app.use(authRouter);
 app.use(userRouter);
 app.use(activityRouter);
-app.use(yogaRouter);
+app.use(workoutRouter);
 
 
 const port = process.env.PORT;

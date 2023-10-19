@@ -87,6 +87,7 @@ export const editPost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
       const id = req.body.id; // รับ ID ของกิจกรรมที่ต้องการลบจากคำขอ
+      console.log(id)
 
       // ค้นหาผู้ใช้โดยใช้ ID หรืออื่น ๆ ที่คุณต้องการใช้ในการตรวจสอบสิทธิ์การลบ
       const token = req.cookies.token;

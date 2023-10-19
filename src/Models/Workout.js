@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const Schema = mongoose.Schema;
 
-const YogaSchema = new Schema({
+const WorkoutSchema = new Schema({
   youtube_embed_link: {
     type: String,
   },
@@ -15,8 +15,11 @@ const YogaSchema = new Schema({
   thumbnail: {
     type: String,
   },
+  type:{
+    type:String,
+  }
 });
 
-const YOGA = mongoose.model("yoga", YogaSchema);
+const WORKOUT = mongoose.model("workout", WorkoutSchema);
 
-export default YOGA;
+export default WORKOUT;
