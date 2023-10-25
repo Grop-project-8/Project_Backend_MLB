@@ -14,7 +14,6 @@ const app = express();
 
 //middleware
 app.use(middleware);
-app.use(express.json());
 
 // Routes
 app.use(authRouter);
