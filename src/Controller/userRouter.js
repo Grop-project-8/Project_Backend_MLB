@@ -1,5 +1,6 @@
 import User from "../Models/usermodel.js";
 import OTP from "../Models/OTP.js";
+import WORKOUT from "../Models/Workout.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
@@ -16,23 +17,171 @@ export const createImage = async (req, res) => {
     const token = req.cookies.token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;
-
     const result = await cloudinary.uploader.upload(req.body.image, {
-      public_id: username,
+      public_id: username, 
       resource_type: "auto",
     });
-
     await User.findOneAndUpdate(
-      { username: username }, 
-      { profileImage: result.secure_url }, 
+      { username: username },
+      { profileImage: result.secure_url },
       { new: true }
     );
-    res.send(result)
+    
+    res.send(result);
+
   } catch (err) {
     console.log(err);
     res.status(500).send("Upload Error!!!");
   }
 };
+
+export const addlastVideo = async (req, res) => {
+  try {
+    const { videoId } = req.body;
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(400).send("Token not found");
+    }
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const username = decodedToken.user.username;
+
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      return res.status(400).send("Username not Found");
+    }
+
+    const videoIndex = user.lastVideoWatched.indexOf(videoId);
+
+    if (videoIndex !== -1) {
+      user.lastVideoWatched.splice(videoIndex, 1);
+    }
+
+    user.lastVideoWatched.push(videoId);
+    await user.save();
+    return res.status(200).json({ success: true, message: "Video ID added successfully" });
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const findVideo = async (req, res) => {
+  try {
+
+    const token = req.cookies.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const username = decodedToken.user.username;
+
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const videoId = user.lastVideoWatched; 
+    const videos = await WORKOUT.find({ _id: { $in: videoId  } });
+
+    if (!videos) {
+      return res.status(404).json({ success: false, message: "Video not found" });
+    }
+
+    return res.status(200).json({ success: true, videos });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+export const getUserdata = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const username = decodedToken.user.username;
+    const weeklyActivityDuration = {
+      Mon: {},
+      Tue: {},
+      Wed: {},
+      Thu: {},
+      Fri: {},
+      Sat: {},
+      Sun: {}
+    };
+    activities.forEach((activity) => {
+      const { activitytype, duration, createdAt } = activity;
+      const activityDate = new Date(createdAt);
+
+      const day = activityDate.toLocaleDateString('en-US', { weekday: 'short' });
+
+      if (weeklyActivityDuration[day][activitytype]) {
+        weeklyActivityDuration[day][activitytype] += duration; 
+      } else {
+        weeklyActivityDuration[day][activitytype] = duration; 
+      }
+    });
+
+    const formattedData = Object.keys(weeklyActivityDuration).map(day => ({
+      YOGA: weeklyActivityDuration[day]["YOGA"] || 0,
+      JUMPPINGROPE: weeklyActivityDuration[day]["JUMPPINGROPE"] || 0,
+      BODYWEIGHT: weeklyActivityDuration[day]["BODYWEIGHT"] || 0,
+      PELATIST: weeklyActivityDuration[day]["PELATIST"] || 0,
+      month: day
+    }));
+
+    res.status(200).json(formattedData);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+export const getUserperday = async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const username = decodedToken.user.username;
+
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const activities = user.activity; // ดึงกิจกรรมทั้งหมดของผู้ใช้
+
+    const today = new Date(); // วันที่ปัจจุบัน
+
+    const activityDuration = {};
+
+    activities.forEach((activity) => {
+      const { activitytype, duration, createdAt } = activity;
+      const activityDate = new Date(createdAt); // วันที่ของกิจกรรม
+
+      // ตรวจสอบว่ากิจกรรมเกิดขึ้นในวันเดียวกันกับวันปัจจุบันหรือไม่
+      if (
+        activityDate.getDate() === today.getDate() &&
+        activityDate.getMonth() === today.getMonth() &&
+        activityDate.getFullYear() === today.getFullYear()
+      ) {
+        if (activityDuration[activitytype]) {
+          activityDuration[activitytype] += duration; // ถ้ามีแล้วให้บวก duration เข้าไป
+        } else {
+          activityDuration[activitytype] = duration; // ถ้ายังไม่มีให้เพิ่มค่าใหม่
+        }
+      }
+    });
+
+    res.status(200).json(activityDuration);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 
 export const updatePassword = async (req, res) => {
   try {
@@ -72,10 +221,10 @@ export const updatePassword = async (req, res) => {
 
 export const removeImage = async (req, res) => {
   try {
-    let image_id = req.body.public_id
-    cloudinary.uploader.destroy(image_id,(result)=>{
+    let image_id = req.body.public_id;
+    cloudinary.uploader.destroy(image_id, (result) => {
       res.send(result);
-    })
+    });
   } catch (err) {
     console.log(err);
     res.status(500).send("Remove Error!!!");
@@ -174,7 +323,6 @@ export const rePass = async (req, res) => {
     res.status(500).send("Error updating password");
   }
 };
-
 
 // ฟังก์ชั่นแยก
 const generateOTP = () => {

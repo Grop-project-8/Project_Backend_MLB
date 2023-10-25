@@ -60,9 +60,10 @@ const UserSchema = new mongoose.Schema({
       default: Date.now,
     },
   ],
-  lastVideoWatched: {
-    type:String, 
-  },
+  lastVideoWatched:[{
+    type: String,
+    default: Date.now,
+  },]
   
 }, { timestamps: true });
 
