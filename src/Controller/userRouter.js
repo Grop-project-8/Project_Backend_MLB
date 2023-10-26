@@ -96,39 +96,54 @@ export const findVideo = async (req, res) => {
   }
 };
 
-
 export const getUserdata = async (req, res) => {
   try {
     const token = req.cookies.token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;
+
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const activities = user.activity; 
+
     const weeklyActivityDuration = {
-      Mon: {},
-      Tue: {},
-      Wed: {},
-      Thu: {},
-      Fri: {},
-      Sat: {},
-      Sun: {}
+      Mon: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Tue: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Wed: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Thu: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Fri: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Sat: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Sun: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 }
     };
+
     activities.forEach((activity) => {
       const { activitytype, duration, createdAt } = activity;
       const activityDate = new Date(createdAt);
-
       const day = activityDate.toLocaleDateString('en-US', { weekday: 'short' });
 
-      if (weeklyActivityDuration[day][activitytype]) {
-        weeklyActivityDuration[day][activitytype] += duration; 
-      } else {
-        weeklyActivityDuration[day][activitytype] = duration; 
+      if (activitytype === 'Yoga') {
+        weeklyActivityDuration[day]["Yoga"] += duration;
+      } else if (activitytype === 'Jumping rope') {
+        weeklyActivityDuration[day]["Jumping rope"] += duration;
+      } else if (activitytype === 'Body weight') {
+        weeklyActivityDuration[day]["Body weight"] += duration;
+      } else if (activitytype === 'Pilates') {
+        weeklyActivityDuration[day]["Pilates"] += duration;
+      } else if (activitytype === 'Dancing') {
+        weeklyActivityDuration[day]["Dancing"] += duration;
       }
     });
 
     const formattedData = Object.keys(weeklyActivityDuration).map(day => ({
-      YOGA: weeklyActivityDuration[day]["YOGA"] || 0,
-      JUMPPINGROPE: weeklyActivityDuration[day]["JUMPPINGROPE"] || 0,
-      BODYWEIGHT: weeklyActivityDuration[day]["BODYWEIGHT"] || 0,
-      PELATIST: weeklyActivityDuration[day]["PELATIST"] || 0,
+      YOGA: weeklyActivityDuration[day]["Yoga"],
+      JUMPPINGROPE: weeklyActivityDuration[day]["Jumping rope"],
+      BODYWEIGHT: weeklyActivityDuration[day]["Body weight"],
+      PELATIST: weeklyActivityDuration[day]["Pilates"],
+      DANCING: weeklyActivityDuration[day]["Dancing"],
       month: day
     }));
 
@@ -138,6 +153,7 @@ export const getUserdata = async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
 
 export const getUserperday = async (req, res) => {
   try {
@@ -151,26 +167,31 @@ export const getUserperday = async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    const activities = user.activity; // ดึงกิจกรรมทั้งหมดของผู้ใช้
+    const activities = user.activity; 
 
-    const today = new Date(); // วันที่ปัจจุบัน
+    const today = new Date(); 
 
-    const activityDuration = {};
+    const activityDuration = {
+      Yoga: 0,
+      "Body weight": 0,
+      "Jumping rope": 0,
+      Dancing: 0,
+      Pilates: 0,
+    };
 
     activities.forEach((activity) => {
       const { activitytype, duration, createdAt } = activity;
-      const activityDate = new Date(createdAt); // วันที่ของกิจกรรม
+      const activityDate = new Date(createdAt); 
 
-      // ตรวจสอบว่ากิจกรรมเกิดขึ้นในวันเดียวกันกับวันปัจจุบันหรือไม่
       if (
         activityDate.getDate() === today.getDate() &&
         activityDate.getMonth() === today.getMonth() &&
         activityDate.getFullYear() === today.getFullYear()
       ) {
-        if (activityDuration[activitytype]) {
-          activityDuration[activitytype] += duration; // ถ้ามีแล้วให้บวก duration เข้าไป
+        if (activitytype in activityDuration) {
+          activityDuration[activitytype] += duration; 
         } else {
-          activityDuration[activitytype] = duration; // ถ้ายังไม่มีให้เพิ่มค่าใหม่
+          activityDuration[activitytype] = duration; 
         }
       }
     });
