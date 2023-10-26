@@ -32,4 +32,8 @@ workoutRouter.delete("/Deleteyoga", deleteVideoById);
 
 
 
+/* workoutRouter.post("/diarycard", getActivityNames);
+ */
+
+
 export default workoutRouter;

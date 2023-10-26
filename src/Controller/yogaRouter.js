@@ -80,3 +80,19 @@ export const deleteVideoById = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
   }
 }
+
+// Backend
+/* export const getActivityNames = async (req, res) => {
+  try {
+    const { type } = req.body;
+    console.log(type);
+    // ดึงข้อมูล ActivityName ทั้งหมดจากฐานข้อมูล
+    const activityNames = await WORKOUT.find({ type: type }).select('title');
+
+
+    res.status(200).json(activityNames);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+} */
