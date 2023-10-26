@@ -111,13 +111,13 @@ export const getUserdata = async (req, res) => {
     const activities = user.activity; 
 
     const weeklyActivityDuration = {
-      Mon: { "Yoga": 0, "Jumpingrope": 0, "Bodyweight": 0, "Pilates": 0, "Dancing": 0 },
-      Tue: { "Yoga": 0, "Jumpingrope": 0, "Bodyweight": 0, "Pilates": 0, "Dancing": 0 },
-      Wed: { "Yoga": 0, "Jumpingrope": 0, "Bodyweight": 0, "Pilates": 0, "Dancing": 0 },
-      Thu: { "Yoga": 0, "Jumpingrope": 0, "Bodyweight": 0, "Pilates": 0, "Dancing": 0 },
-      Fri: { "Yoga": 0, "Jumpingrope": 0, "Bodyweight": 0, "Pilates": 0, "Dancing": 0 },
-      Sat: { "Yoga": 0, "Jumpingrope": 0, "Bodyweight": 0, "Pilates": 0, "Dancing": 0 },
-      Sun: { "Yoga": 0, "Jumpingrope": 0, "Bodyweight": 0, "Pilates": 0, "Dancing": 0 }
+      Mon: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Tue: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Wed: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Thu: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Fri: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Sat: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 },
+      Sun: { "Yoga": 0, "Jumping rope": 0, "Body weight": 0, "Pilates": 0, "Dancing": 0 }
     };
 
     activities.forEach((activity) => {
@@ -128,9 +128,9 @@ export const getUserdata = async (req, res) => {
       if (activitytype === 'Yoga') {
         weeklyActivityDuration[day]["Yoga"] += duration;
       } else if (activitytype === 'Jumping rope') {
-        weeklyActivityDuration[day]["Jumpingrope"] += duration;
+        weeklyActivityDuration[day]["Jumping rope"] += duration;
       } else if (activitytype === 'Body weight') {
-        weeklyActivityDuration[day]["Bodyweight"] += duration;
+        weeklyActivityDuration[day]["Body weight"] += duration;
       } else if (activitytype === 'Pilates') {
         weeklyActivityDuration[day]["Pilates"] += duration;
       } else if (activitytype === 'Dancing') {
