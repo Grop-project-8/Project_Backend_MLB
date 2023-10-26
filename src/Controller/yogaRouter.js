@@ -1,6 +1,6 @@
 import WORKOUT from "../Models/Workout.js";
 
-export const createYoga = async (req, res) => {
+export const createVdo = async (req, res) => {
   try {
     const { youtube_embed_link, title, equipment, thumbnail,type } = req.body;
     // check link
@@ -22,7 +22,7 @@ export const createYoga = async (req, res) => {
   }
 };
 
-export const getyoga = async (req, res) => {
+export const getVdo = async (req, res) => {
   try {
     const allVideo = await WORKOUT.find({});
     res.status(200).json(allVideo);
@@ -44,7 +44,7 @@ export const getVideoById = async (req, res) => {
   }
 };
 
-export const updateYogaVideoById = async (req, res) => {
+export const updateVideoById = async (req, res) => {
   try {
     const { id,youtube_embed_link, title, equipment, thumbnail } = req.body;
     const updatedYogaVideo = await WORKOUT.findByIdAndUpdate(
@@ -67,7 +67,7 @@ export const updateYogaVideoById = async (req, res) => {
   }
 };
 
-export const deleteYogaVideoById = async (req, res) => {
+export const deleteVideoById = async (req, res) => {
   try {
       const { id } = req.body;
       const deletedYogaVideo = await WORKOUT.findByIdAndRemove(id);
@@ -80,3 +80,19 @@ export const deleteYogaVideoById = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
   }
 }
+
+// Backend
+/* export const getActivityNames = async (req, res) => {
+  try {
+    const { type } = req.body;
+    console.log(type);
+    // ดึงข้อมูล ActivityName ทั้งหมดจากฐานข้อมูล
+    const activityNames = await WORKOUT.find({ type: type }).select('title');
+
+
+    res.status(200).json(activityNames);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+} */

@@ -1,13 +1,13 @@
 import express from "express";
 
-import { createYoga, getyoga, getVideoById ,updateYogaVideoById,deleteYogaVideoById} from "../Controller/yogaRouter.js";
+import { createVdo, getVdo, getVideoById ,updateVideoById,deleteVideoById} from "../Controller/yogaRouter.js";
 
 const workoutRouter = express();
 
 // Endpoint http://localhost:8000/getyoga
 // Method GET
 // Access Publish
-workoutRouter.get("/getyoga", getyoga);
+workoutRouter.get("/getyoga", getVdo);
 
 // Endpoint http://localhost:8000/getyoga/:id
 // Method GET
@@ -17,19 +17,23 @@ workoutRouter.get("/getyoga/:id", getVideoById);
 // Endpoint http://localhost:8000/createyoga
 // Method POST
 // Access Publish
-workoutRouter.post("/createyoga", createYoga);
+workoutRouter.post("/createyoga", createVdo);
 
 // Endpoint http://localhost:8000/updateyoga
 // Method POST
 // Access Publish
-workoutRouter.put("/updateyoga", updateYogaVideoById);
+workoutRouter.put("/updateyoga", updateVideoById);
 
 
 // Endpoint http://localhost:8000/deleteyoga
 // Method POST
 // Access Publish
-workoutRouter.delete("/Deleteyoga", deleteYogaVideoById);
+workoutRouter.delete("/Deleteyoga", deleteVideoById);
 
+
+
+/* workoutRouter.post("/diarycard", getActivityNames);
+ */
 
 
 export default workoutRouter;
