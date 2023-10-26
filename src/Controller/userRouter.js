@@ -173,7 +173,7 @@ export const getUserperday = async (req, res) => {
 
     const activityDuration = {
       Yoga: 0,
-      "Bodyweight": 0,
+      "BodyWeight": 0,
       "Jumping rope": 0,
       Dancing: 0,
       Pilates: 0,
