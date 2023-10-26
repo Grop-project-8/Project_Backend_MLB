@@ -10,7 +10,7 @@ export const createPost = async (req, res) => {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;
     
-    const existingUser = await User.findOneAndUpdate({ username: username });
+    const existingUser = await User.findOne({ username: username });
     if (!existingUser) {
       return res.status(404).send("User not found");
     }
