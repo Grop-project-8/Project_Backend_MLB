@@ -6,7 +6,8 @@ import cors from 'cors';
 import "dotenv/config";
 
 const corsOptions = {
-    origin: 'https://project-mlb.vercel.app', 
+  origin: ['http://localhost:5173', 'https://project-mlb.vercel.app'],
+    // origin: 'https://project-mlb.vercel.app',
     methods: "GET,PUT,PATCH,POST,DELETE",
     credentials: true,
     optionsSuccessStatus: 204, 
