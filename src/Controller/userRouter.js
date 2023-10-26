@@ -129,7 +129,7 @@ export const getUserdata = async (req, res) => {
         weeklyActivityDuration[day]["Yoga"] += duration;
       } else if (activitytype === 'Jumping rope') {
         weeklyActivityDuration[day]["Jumping rope"] += duration;
-      } else if (activitytype === 'Body weight') {
+      } else if (activitytype === 'BodyWeight') {
         weeklyActivityDuration[day]["Body weight"] += duration;
       } else if (activitytype === 'Pilates') {
         weeklyActivityDuration[day]["Pilates"] += duration;
