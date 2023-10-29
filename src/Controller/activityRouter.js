@@ -5,7 +5,9 @@ import User from "../Models/usermodel.js";
 // Create Post
 export const createPost = async (req, res) => {
   try {
+    
     const { activitytype , activityname , detail , duration , createdAt } = req.body;
+    
     const token = req.cookies.token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;
@@ -15,8 +17,8 @@ export const createPost = async (req, res) => {
       return res.status(404).send("User not found");
     }
     
-
     existingUser.activity.push({ activitytype,activityname, detail,duration,createdAt });
+    
     const updatedUser = await existingUser.save();
 
     res.send(updatedUser);
@@ -30,7 +32,6 @@ export const deletePost = async (req, res) => {
   try {
     const id = req.body.id; 
 
-   
     const token = req.cookies.token;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodedToken.user.username;

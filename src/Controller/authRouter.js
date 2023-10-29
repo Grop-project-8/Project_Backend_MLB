@@ -105,19 +105,13 @@ export const login = async (req, res) => {
 
 export const logOut = async (req, res) => {
   try {
-    res.cookie("token", "expired", {
-      maxAge: 1, 
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",  
-    });
+    res.clearCookie("token");
     return res.json({ isLoggedIn: false });
   } catch (err) {
     console.log(err);
     res.status(401).send("error");
   }
 };
-
 
 export const checkId = async (req, res) => {
   try {
