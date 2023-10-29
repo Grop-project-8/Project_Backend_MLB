@@ -154,7 +154,6 @@ export const getUserdata = async (req, res) => {
   }
 };
 
-
 export const getUserperday = async (req, res) => {
   try {
     const token = req.cookies.token;
@@ -202,7 +201,6 @@ export const getUserperday = async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 
 export const updatePassword = async (req, res) => {
   try {
