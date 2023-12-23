@@ -107,7 +107,7 @@ export const login = async (req, res) => {
 
 export const logOut = async (req, res) => {
   try {
-    res.clearCookie("token");
+    res.clearCookie('token', { domain: 'project-mlb.vercel.app', path: '/', secure: true, httpOnly: true });
     clearCookies();
     return res.json({ isLoggedIn: false });
   } catch (err) {
