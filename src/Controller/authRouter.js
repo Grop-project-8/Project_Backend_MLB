@@ -1,6 +1,8 @@
 import User from "../Models/usermodel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { clearCookies } from '@vercel/node';
+
 
 export const register = async (req, res) => {
   try {
@@ -106,6 +108,7 @@ export const login = async (req, res) => {
 export const logOut = async (req, res) => {
   try {
     res.clearCookie("token");
+    clearCookies();
     return res.json({ isLoggedIn: false });
   } catch (err) {
     console.log(err);
