@@ -105,8 +105,9 @@ export const login = async (req, res) => {
 };
 
 export const logOut = async (req, res) => {
+
   try {
-    res.clearCookie('token');
+    res.clearCookie('token', { domain: 'project-backend-mlb.onrender.com'});
     return res.json({ isLoggedIn: false });
   } catch (err) {
     console.log(err);
